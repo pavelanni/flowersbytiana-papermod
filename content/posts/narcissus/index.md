@@ -1,6 +1,6 @@
 ---
 date: '2024-11-03T16:14:26-05:00'
-draft: true
+draft: false
 title: 'Narcissus'
 cover:
   image: "https://cdn.flowersbytiana.com/flowers/narcissus/narcissus-000.jpg"

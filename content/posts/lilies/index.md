@@ -1,6 +1,6 @@
 ---
 date: '2024-11-03T16:09:10-05:00'
-draft: true
+draft: false
 title: 'Lilies'
 cover:
   image: "https://cdn.flowersbytiana.com/flowers/lilies/lilies-000.jpg"
