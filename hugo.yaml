@@ -1,0 +1,21 @@
+baseURL: https://flowersbytiana.com/
+languageCode: en-us
+title: Flowers by Tiana
+theme: ["PaperMod"]
+
+params:
+  title: Flowers by Tiana
+  description: "Gallery of Chinese watercolors"
+  keywords: ["Chinese watercolors", "flowers", "portfolio"]
+  author: "Tiana"
+  homeInfoParams:
+    Title: "Welcome to Flowers by Tiana!"
+    Content: |
+      I'm Tiana, and I'm passionate about Chinese painting,
+      especially the beauty of traditional flowers, fish, birds, and animals that inspire me.
+      I’ve studied with various teachers and traveled to China multiple times,
+      learning at Chinese universities to deepen my understanding of classical techniques and themes.
+      Through each brushstroke, I strive to honor the timeless traditions of Chinese art and share its elegance and harmony with you.
+  cover:
+    hiddenInList: false
+  imageCdn: "https://cdn.flowersbytiana.com/"
