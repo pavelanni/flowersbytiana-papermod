@@ -1,0 +1,12 @@
+{{ $image := .Get "src" }}
+{{ $alt := .Get "alt" | default "" }}
+{{ $width := .Get "width" | default "200px" }}
+{{ $position := .Get "position" | default "left" }}
+<div class="side-image-container{{ if eq $position "right" }} image-right{{ end }}">
+    <div class="side-image-wrapper">
+        <img src="{{ $image }}" alt="{{ $alt }}" class="side-image">
+    </div>
+    <div class="side-image-content">
+        {{ .Inner | .Page.RenderString }}
+    </div>
+</div>

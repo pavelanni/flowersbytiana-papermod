@@ -2,8 +2,11 @@
 date: '2024-11-03T15:07:14-05:00'
 draft: false
 title: 'Plum Blossom'
+tags:
+  - plum
+  - flowers
 cover:
-  image: "https://cdn.flowersbytiana.com/flowers/plum/plum-005.jpg"
+  image: "plum-cover.jpg"
 ---
 
 Plum Blossom is emblematic of perseverance and renewal.
@@ -18,8 +21,6 @@ The plum blossom’s resilience in winter signifies endurance, hope, and rebirth
 {{< img "flowers/plum/plum-003.jpg" "Plum 003" >}}
 
 {{< img "flowers/plum/plum-004.jpg" "Plum 004" >}}
-
-{{< img "flowers/plum/plum-005.jpg" "Plum 005" >}}
 
 {{< img "flowers/plum/plum-006.jpg" "Plum 006" >}}
 

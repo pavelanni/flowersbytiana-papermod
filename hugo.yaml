@@ -18,4 +18,17 @@ params:
       Through each brushstroke, I strive to honor the timeless traditions of Chinese art and share its elegance and harmony with you.
   cover:
     hiddenInList: false
+    hiddenInSingle: false
   imageCdn: "https://cdn.flowersbytiana.com/"
+
+menu:
+  main:
+  - name: Albums
+    url: /albums/
+    weight: 1
+  - name: About
+    url: /about/
+    weight: 2
+  - name: Tags
+    url: /tags/
+    weight: 3

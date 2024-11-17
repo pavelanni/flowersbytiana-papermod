@@ -2,8 +2,11 @@
 date: '2024-11-03T16:15:29-05:00'
 draft: false
 title: 'Orchid'
+tags:
+  - orchid
+  - flowers
 cover:
-  image: "https://cdn.flowersbytiana.com/flowers/orchids/orchids-012.jpg"
+  image: "orchids-cover.jpg"
 ---
 
 Orchid is symbolic of refinement, rare beauty, and elegance; it is also a symbol of virtue and moral integrity in Chinese literature.

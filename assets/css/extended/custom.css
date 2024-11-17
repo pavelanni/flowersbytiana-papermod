@@ -1,0 +1,43 @@
+.side-image-container {
+    display: flex;
+    align-items: start;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.side-image-container.image-right {
+    flex-direction: row-reverse;
+}
+
+.side-image-wrapper {
+    flex: 1;
+}
+
+.side-image {
+    width: 100%;
+    /* Image fills the wrapper */
+    height: auto;
+    /* Maintains aspect ratio */
+    display: block;
+    /* Removes any unwanted space below the image */
+}
+
+.side-image-content {
+    flex: 1;
+    min-width: 0;
+    /* Allows content to shrink below its natural width if needed */
+    padding: 1rem;
+}
+
+/* Responsive design for mobile */
+@media (max-width: 600px) {
+
+    .side-image-container,
+    .side-image-container.image-right {
+        flex-direction: row;
+    }
+
+    .side-image-wrapper {
+        margin: 0 auto;
+    }
+}

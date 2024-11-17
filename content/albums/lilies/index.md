@@ -2,13 +2,15 @@
 date: '2024-11-03T16:09:10-05:00'
 draft: false
 title: 'Lilies'
+tags:
+  - lilies
+  - flowers
 cover:
-  image: "https://cdn.flowersbytiana.com/flowers/lilies/lilies-000.jpg"
+  image: "lilies-cover.jpg"
 ---
 
 Lilies frequently symbolize purity, refined beauty, and a wish for a harmonious union in marriage; it is a popular wedding flower and is linked to blessings and abundance.
 
-{{< img "flowers/lilies/lilies-000.jpg" "Lilies 000" >}}
 
 {{< img "flowers/lilies/lilies-001.jpg" "Lilies 001" >}}
 

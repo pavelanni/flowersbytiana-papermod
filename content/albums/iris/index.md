@@ -2,8 +2,11 @@
 date: '2024-11-03T16:05:47-05:00'
 draft: false
 title: 'Iris'
+tags:
+  - iris
+  - flowers
 cover:
-  image: "https://cdn.flowersbytiana.com/flowers/irises/irises-020.jpg"
+  image: "irises-cover.jpg"
 ---
 
 Iris is seen as a symbol of hope and the promise of future prosperity; its delicate beauty also embodies elegance and grace.

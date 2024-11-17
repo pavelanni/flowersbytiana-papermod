@@ -2,13 +2,16 @@
 date: '2024-11-03T16:17:24-05:00'
 draft: false
 title: 'Peonies'
+tags:
+  - peonies
+  - flowers
 cover:
-  image: "https://cdn.flowersbytiana.com/flowers/peonies/peonies-000.jpg"
+  image: "peonies-cover.jpg"
+  hidden: true
 ---
 
 Peonies are known as the "king of flowers," representing wealth, honor, and prosperity; they are a national symbol and embody opulence and high social rank.
 
-{{< img "flowers/peonies/peonies-000.jpg" "Peonies 000" >}}
 
 {{< img "flowers/peonies/peonies-001.jpg" "Peonies 001" >}}
 

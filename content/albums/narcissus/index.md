@@ -2,8 +2,11 @@
 date: '2024-11-03T16:14:26-05:00'
 draft: false
 title: 'Narcissus'
+tags:
+  - narcissus
+  - flowers
 cover:
-  image: "https://cdn.flowersbytiana.com/flowers/narcissus/narcissus-000.jpg"
+  image: "narcissus-cover.jpg"
 ---
 
 Narcissus represents good fortune, prosperity, and new beginnings, often associated with the Lunar New Year for its timely bloom.

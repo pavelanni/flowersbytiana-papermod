@@ -2,8 +2,11 @@
 date: '2024-11-03T16:12:20-05:00'
 draft: false
 title: 'Lotus'
+tags:
+  - lotus
+  - flowers
 cover:
-  image: "https://cdn.flowersbytiana.com/flowers/lotus/lotus-052.jpg"
+  image: "lotus-cover.jpg"
 ---
 
 Lotus is known for its ability to emerge from mud pure and unstained, symbolizing purity, spiritual enlightenment, and resilience, representing both physical and spiritual transcendence.
