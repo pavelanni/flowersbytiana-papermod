@@ -1,0 +1,48 @@
+<!-- Add Medium Zoom -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.8/medium-zoom.min.js"></script>
+
+<!-- Initialize Medium Zoom -->
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    // Try to select all images in the content
+    const images = document.querySelectorAll('figure img');
+    console.log('Found images:', images.length); // Debug log
+
+    const zoom = mediumZoom(images, {
+      margin: 24,
+      background: 'rgba(0,0,0,0.9)',
+      scrollOffset: 40,
+    });
+
+    // Add event listener to check if zoom is working
+    zoom.on('open', event => {
+      console.log('Image zoomed:', event.target.src);
+    });
+  });
+</script>
+
+<style>
+  /* Styling for images */
+  figure {
+    margin: 1.5rem 0;
+  }
+
+  figure img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    cursor: zoom-in;
+    transition: transform 0.2s ease;
+  }
+
+  figure img:hover {
+    transform: scale(1.02);
+  }
+
+  .caption, figcaption {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.5rem;
+  }
+</style>

@@ -11,7 +11,6 @@ cover:
 
 Lilies frequently symbolize purity, refined beauty, and a wish for a harmonious union in marriage; it is a popular wedding flower and is linked to blessings and abundance.
 
-
 {{< img "flowers/lilies/lilies-001.jpg" "Lilies 001" >}}
 
 {{< img "flowers/lilies/lilies-002.jpg" "Lilies 002" >}}

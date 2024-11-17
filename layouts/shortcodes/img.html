@@ -3,5 +3,7 @@
 {{ $alt := .Get 1 }}
 {{ $caption := .Get 2 }}
 
-<img src="{{ $imageCdn }}{{ $imageName }}" alt="{{ $alt }}" />
-{{ with $caption }}<p class="caption">{{ . }}</p>{{ end }}
+<figure>
+  <img src="{{ $imageCdn }}{{ $imageName }}" alt="{{ $alt }}" />
+  {{ with $caption }}<p class="caption">{{ . }}</p>{{ end }}
+</figure>

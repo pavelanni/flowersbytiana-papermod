@@ -33,7 +33,7 @@ I'm very grateful for his guidance and support.
 [Ma Qingxiong's personal website](https://maqingxiong.com/)
 {{< /side-image >}}
 
-### Yi Ping
+### Yi Ping 易凭
 
 {{< side-image src="Yi_Ping_Tiana.jpeg"  alt="Yi Ping and Tiana" >}}
 Yi Ping is a creative researcher, director of Hunan Artists Association,
