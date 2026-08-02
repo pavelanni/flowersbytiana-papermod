@@ -3,6 +3,9 @@ languageCode: en-us
 title: Flowers by Tiana
 theme: ["PaperMod"]
 
+pagination:
+  pagerSize: 20
+
 params:
   title: Flowers by Tiana
   description: "Gallery of Chinese watercolors"
