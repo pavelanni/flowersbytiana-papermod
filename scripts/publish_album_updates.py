@@ -47,6 +47,35 @@ def local_canonical_files(staging_slug_dir: Path, slug: str) -> dict[str, Path]:
     return result
 
 
+def local_canonical_files_preview(staging_slug_dir: Path, slug: str) -> dict[str, Path]:
+    """Read-only counterpart to normalize_local_filenames() + local_canonical_files().
+
+    Builds the same dict[str, Path] shape, but short-named files are listed
+    under the canonical name they *would* be renamed to -- without renaming
+    or otherwise touching anything on disk. Safe to use for dry runs.
+
+    If a short-named file's target collides with an existing canonical file,
+    the short-named file wins, matching what normalize_local_filenames()
+    would actually do (Path.rename silently overwrites).
+    """
+    canonical = {}
+    short_named = {}
+    for path in staging_slug_dir.iterdir():
+        if not path.is_file():
+            continue
+        if canonical_index(path.name, slug) is not None:
+            canonical[path.name] = path
+            continue
+        m = SHORT_NAME_RE.match(path.name)
+        if m:
+            index = int(m.group(1))
+            ext = m.group(2)
+            canonical_name = "%s-%03d%s" % (slug, index, ext)
+            short_named[canonical_name] = path
+    canonical.update(short_named)
+    return canonical
+
+
 @dataclass
 class Action:
     kind: str  # "new" | "changed" | "unchanged"
@@ -152,8 +181,14 @@ def process_album(
     apply: bool,
 ) -> list[Action]:
     staging_slug_dir = staging_dir / slug
-    normalize_local_filenames(staging_slug_dir, slug)
-    local_files = local_canonical_files(staging_slug_dir, slug)
+    if apply:
+        # Only mutate the filesystem once we're committed to actually
+        # publishing -- a dry run must never rename (and thus potentially
+        # silently overwrite) local files.
+        normalize_local_filenames(staging_slug_dir, slug)
+        local_files = local_canonical_files(staging_slug_dir, slug)
+    else:
+        local_files = local_canonical_files_preview(staging_slug_dir, slug)
     remote_etags = list_remote_objects(s3_client, bucket, "%s/" % slug)
     actions = compute_plan(slug, local_files, remote_etags)
 
@@ -166,15 +201,22 @@ def process_album(
     if not apply:
         return actions
 
+    # Resolve and validate the album title *before* uploading anything, so a
+    # missing/malformed index.md aborts before any photo is written to R2.
+    # Otherwise a failure here after uploads have already happened leaves the
+    # photo stuck in R2 with no site-visible entry: on the next run its ETag
+    # matches the local MD5, so it's classified "unchanged" and never
+    # revisited.
+    new_actions = [a for a in actions if a.kind == "new"]
+    index_md_path = content_dir / slug / "index.md"
+    title = album_title(index_md_path) if new_actions else None
+
     for action in actions:
         if action.kind in ("new", "changed"):
             key = "%s/%s" % (slug, action.filename)
             s3_client.upload_file(str(action.local_path), bucket, key)
 
-    new_actions = [a for a in actions if a.kind == "new"]
     if new_actions:
-        index_md_path = content_dir / slug / "index.md"
-        title = album_title(index_md_path)
         append_img_lines(index_md_path, slug, title, new_actions)
 
     return actions
@@ -197,21 +239,24 @@ def main(argv=None, repo_root=None) -> int:
     )
     content_dir = repo_root / "content" / "albums"
 
-    had_error = False
+    error_count = 0
     for slug in slugs:
         print("%s:" % slug)
         try:
             process_album(
                 s3_client, R2_BUCKET, args.staging_dir, content_dir, slug, args.apply
             )
-        except ValueError as e:
+        except (ValueError, OSError, KeyError) as e:
             print("  ERROR: %s" % e)
-            had_error = True
+            error_count += 1
 
     if not args.apply:
         print("\nDry run only -- rerun with --apply to upload and update index.md.")
 
-    return 1 if had_error else 0
+    if error_count:
+        print("\n%d album(s) failed." % error_count)
+
+    return 1 if error_count else 0
 
 
 if __name__ == "__main__":

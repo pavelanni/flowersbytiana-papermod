@@ -14,6 +14,7 @@ from publish_album_updates import (
     compute_plan,
     list_remote_objects,
     local_canonical_files,
+    local_canonical_files_preview,
     md5_of_file,
     normalize_local_filenames,
 )
@@ -103,6 +104,56 @@ class TestLocalCanonicalFiles(unittest.TestCase):
             )
             self.assertEqual(
                 result["kingfisher-000.jpg"], staging_slug_dir / "kingfisher-000.jpg"
+            )
+
+
+class TestLocalCanonicalFilesPreview(unittest.TestCase):
+    def test_matches_local_canonical_files_when_no_short_names(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            staging_slug_dir = Path(tmp)
+            (staging_slug_dir / "kingfisher-000.jpg").write_bytes(b"x")
+            (staging_slug_dir / "kingfisher-001.jpg").write_bytes(b"y")
+            (staging_slug_dir / "notes.txt").write_bytes(b"z")
+
+            result = local_canonical_files_preview(staging_slug_dir, "kingfisher")
+
+            self.assertEqual(
+                set(result.keys()), {"kingfisher-000.jpg", "kingfisher-001.jpg"}
+            )
+
+    def test_lists_short_named_file_under_canonical_name_without_renaming(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            staging_slug_dir = Path(tmp)
+            short_path = staging_slug_dir / "7.jpg"
+            short_path.write_bytes(b"new content for 7")
+
+            result = local_canonical_files_preview(staging_slug_dir, "kingfisher")
+
+            self.assertEqual(set(result.keys()), {"kingfisher-007.jpg"})
+            self.assertEqual(result["kingfisher-007.jpg"], short_path)
+            # Nothing was renamed on disk.
+            self.assertTrue(short_path.exists())
+            self.assertFalse((staging_slug_dir / "kingfisher-007.jpg").exists())
+
+    def test_short_named_file_wins_over_colliding_canonical_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            staging_slug_dir = Path(tmp)
+            canonical_path = staging_slug_dir / "dragons-004.jpg"
+            canonical_path.write_bytes(b"existing canonical content")
+            short_path = staging_slug_dir / "4.jpg"
+            short_path.write_bytes(b"mis-numbered replacement content")
+
+            result = local_canonical_files_preview(staging_slug_dir, "dragons")
+
+            self.assertEqual(set(result.keys()), {"dragons-004.jpg"})
+            # The short-named file wins, matching what Path.rename would do.
+            self.assertEqual(result["dragons-004.jpg"], short_path)
+            # Neither file was touched on disk.
+            self.assertEqual(
+                canonical_path.read_bytes(), b"existing canonical content"
+            )
+            self.assertEqual(
+                short_path.read_bytes(), b"mis-numbered replacement content"
             )
 
 
@@ -360,6 +411,66 @@ class TestProcessAlbum(unittest.TestCase):
                 '{{< img "dragons/dragons-002.jpg" "Dragons 002" >}}', index_text
             )
 
+    def test_dry_run_does_not_rename_colliding_short_named_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            staging_dir, content_dir = self._setup_dirs(tmp)
+            staging_slug_dir = staging_dir / "dragons"
+            existing_content = b"existing canonical content"
+            (staging_slug_dir / "dragons-004.jpg").write_bytes(existing_content)
+            colliding_content = b"mis-numbered replacement content"
+            (staging_slug_dir / "4.jpg").write_bytes(colliding_content)
+
+            remote_etag = hashlib.md5(existing_content).hexdigest()
+            client = FakeS3Client({"dragons/dragons-004.jpg": remote_etag})
+
+            actions = process_album(
+                client, "flowersbytiana", staging_dir, content_dir, "dragons", False
+            )
+
+            # Correctly classified as "changed" -- diffed against the short
+            # name's content, since that's what would win after normalize.
+            self.assertEqual([a.kind for a in actions], ["changed"])
+            self.assertEqual(actions[0].filename, "dragons-004.jpg")
+
+            # Neither file was touched on disk; nothing was uploaded.
+            self.assertTrue((staging_slug_dir / "4.jpg").exists())
+            self.assertEqual(
+                (staging_slug_dir / "dragons-004.jpg").read_bytes(), existing_content
+            )
+            self.assertEqual(
+                (staging_slug_dir / "4.jpg").read_bytes(), colliding_content
+            )
+            self.assertEqual(client.uploaded, {})
+
+    def test_apply_aborts_before_upload_when_title_lookup_fails(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            staging_dir, content_dir = self._setup_dirs(tmp)
+            # Overwrite index.md with front matter that has no "title" key,
+            # so album_title() raises KeyError.
+            (content_dir / "dragons" / "index.md").write_text(
+                "---\n"
+                "date: '2026-08-02T12:00:00-04:00'\n"
+                "draft: false\n"
+                "weight: 110\n"
+                "---\n"
+                '\n{{< img "dragons/dragons-000.jpg" "Dragons 000" >}}\n'
+            )
+            (staging_dir / "dragons" / "2.jpg").write_bytes(b"new painting")
+
+            client = FakeS3Client(
+                {
+                    "dragons/dragons-000.jpg": "etag0",
+                    "dragons/dragons-001.jpg": "etag1",
+                }
+            )
+
+            with self.assertRaises(KeyError):
+                process_album(
+                    client, "flowersbytiana", staging_dir, content_dir, "dragons", True
+                )
+
+            self.assertEqual(client.uploaded, {})
+
     def test_apply_with_only_changed_photo_does_not_touch_index(self):
         with tempfile.TemporaryDirectory() as tmp:
             staging_dir, content_dir = self._setup_dirs(tmp)
@@ -437,6 +548,39 @@ class TestMain(unittest.TestCase):
             self.assertIn("unchanged", output)
             self.assertIn("raccoon:", output)
             self.assertIn("ERROR:", output)
+
+    def test_prints_failure_summary_and_continues_past_missing_staging_dir(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo_root, staging_dir = self._setup_repo(tmp)
+
+            dragons_dir = staging_dir / "dragons"
+            dragons_dir.mkdir()
+            dragons_path = dragons_dir / "dragons-000.jpg"
+            dragons_path.write_bytes(b"a dragon")
+            dragons_etag = hashlib.md5(b"a dragon").hexdigest()
+
+            # "raccoon" has no staging subdirectory at all -> FileNotFoundError
+            # (an OSError), not a ValueError, when process_album tries to scan
+            # it. main() must still catch this, report it, and continue on to
+            # process "dragons" successfully.
+            client = FakeS3Client({"dragons/dragons-000.jpg": dragons_etag})
+            buf = io.StringIO()
+            with mock.patch(
+                "publish_album_updates.build_s3_client", return_value=client
+            ):
+                with contextlib.redirect_stdout(buf):
+                    result = main(
+                        argv=[str(staging_dir), "dragons", "raccoon"],
+                        repo_root=repo_root,
+                    )
+
+            output = buf.getvalue()
+            self.assertEqual(result, 1)
+            self.assertIn("dragons:", output)
+            self.assertIn("unchanged", output)
+            self.assertIn("raccoon:", output)
+            self.assertIn("ERROR:", output)
+            self.assertIn("1 album(s) failed.", output)
 
     def test_all_success_run_returns_zero(self):
         with tempfile.TemporaryDirectory() as tmp:
