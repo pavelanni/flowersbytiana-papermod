@@ -3,3 +3,4 @@ public
 scratch
 .wrangler
 resources
+.env
