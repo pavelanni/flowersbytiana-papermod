@@ -180,14 +180,15 @@ def process_album(
     return actions
 
 
-def main() -> int:
+def main(argv=None, repo_root=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("staging_dir", type=Path)
     parser.add_argument("slugs", nargs="*")
     parser.add_argument("--apply", action="store_true")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
-    repo_root = Path(__file__).resolve().parent.parent
+    if repo_root is None:
+        repo_root = Path(__file__).resolve().parent.parent
     env = load_env(repo_root / ".env")
     s3_client = build_s3_client(env, R2_ENDPOINT)
 

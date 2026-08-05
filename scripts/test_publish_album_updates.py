@@ -1,7 +1,10 @@
+import contextlib
 import hashlib
+import io
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from publish_album_updates import (
     Action,
@@ -14,7 +17,7 @@ from publish_album_updates import (
     md5_of_file,
     normalize_local_filenames,
 )
-from publish_album_updates import load_env, process_album
+from publish_album_updates import load_env, main, process_album
 
 
 class TestMd5OfFile(unittest.TestCase):
@@ -374,6 +377,86 @@ class TestProcessAlbum(unittest.TestCase):
             self.assertEqual(
                 (content_dir / "dragons" / "index.md").read_text(), SAMPLE_INDEX_MD
             )
+
+
+class TestMain(unittest.TestCase):
+    def _setup_repo(self, tmp):
+        repo_root = Path(tmp)
+        (repo_root / ".env").write_text(
+            "ACCESS_KEY_ID=test\nSECRET_ACCESS_KEY=test\n"
+        )
+        staging_dir = repo_root / "staging"
+        staging_dir.mkdir()
+        return repo_root, staging_dir
+
+    def test_no_slugs_given_scans_all_staging_subdirectories(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo_root, staging_dir = self._setup_repo(tmp)
+            (staging_dir / "dragons").mkdir()
+            (staging_dir / "kingfisher").mkdir()
+
+            client = FakeS3Client({})
+            buf = io.StringIO()
+            with mock.patch(
+                "publish_album_updates.build_s3_client", return_value=client
+            ):
+                with contextlib.redirect_stdout(buf):
+                    result = main(argv=[str(staging_dir)], repo_root=repo_root)
+
+            output = buf.getvalue()
+            self.assertEqual(result, 0)
+            self.assertIn("dragons:", output)
+            self.assertIn("kingfisher:", output)
+
+    def test_one_slug_error_does_not_stop_the_others_and_returns_nonzero(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo_root, staging_dir = self._setup_repo(tmp)
+
+            dragons_dir = staging_dir / "dragons"
+            dragons_dir.mkdir()
+            dragons_path = dragons_dir / "dragons-000.jpg"
+            dragons_path.write_bytes(b"a dragon")
+            dragons_etag = hashlib.md5(b"a dragon").hexdigest()
+
+            raccoon_dir = staging_dir / "raccoon"
+            raccoon_dir.mkdir()
+            # Index 5 with no prior remote objects is a gap -> ValueError.
+            (raccoon_dir / "raccoon-005.jpg").write_bytes(b"a raccoon")
+
+            client = FakeS3Client({"dragons/dragons-000.jpg": dragons_etag})
+            buf = io.StringIO()
+            with mock.patch(
+                "publish_album_updates.build_s3_client", return_value=client
+            ):
+                with contextlib.redirect_stdout(buf):
+                    result = main(argv=[str(staging_dir)], repo_root=repo_root)
+
+            output = buf.getvalue()
+            self.assertEqual(result, 1)
+            self.assertIn("dragons:", output)
+            self.assertIn("unchanged", output)
+            self.assertIn("raccoon:", output)
+            self.assertIn("ERROR:", output)
+
+    def test_all_success_run_returns_zero(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo_root, staging_dir = self._setup_repo(tmp)
+
+            dragons_dir = staging_dir / "dragons"
+            dragons_dir.mkdir()
+            dragons_path = dragons_dir / "dragons-000.jpg"
+            dragons_path.write_bytes(b"a dragon")
+            dragons_etag = hashlib.md5(b"a dragon").hexdigest()
+
+            client = FakeS3Client({"dragons/dragons-000.jpg": dragons_etag})
+            buf = io.StringIO()
+            with mock.patch(
+                "publish_album_updates.build_s3_client", return_value=client
+            ):
+                with contextlib.redirect_stdout(buf):
+                    result = main(argv=[str(staging_dir), "dragons"], repo_root=repo_root)
+
+            self.assertEqual(result, 0)
 
 
 if __name__ == "__main__":
