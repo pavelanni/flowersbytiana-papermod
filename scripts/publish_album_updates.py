@@ -2,6 +2,7 @@
 """Publish incremental photo updates from staging/<slug>/ to R2 and index.md."""
 import hashlib
 import re
+from dataclasses import dataclass
 from pathlib import Path
 
 SHORT_NAME_RE = re.compile(r"^(\d+)(\.[A-Za-z0-9]+)$")
@@ -39,3 +40,52 @@ def local_canonical_files(staging_slug_dir: Path, slug: str) -> dict[str, Path]:
         if canonical_index(path.name, slug) is not None:
             result[path.name] = path
     return result
+
+
+@dataclass
+class Action:
+    kind: str  # "new" | "changed" | "unchanged"
+    filename: str
+    index: int
+    local_path: Path
+
+
+def list_remote_objects(s3_client, bucket: str, prefix: str) -> dict[str, str]:
+    result = {}
+    paginator = s3_client.get_paginator("list_objects_v2")
+    for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+        for obj in page.get("Contents", []):
+            filename = obj["Key"][len(prefix):]
+            result[filename] = obj["ETag"].strip('"')
+    return result
+
+
+def compute_plan(
+    slug: str, local_files: dict[str, Path], remote_etags: dict[str, str]
+) -> list[Action]:
+    indexed = sorted(
+        (canonical_index(filename, slug), filename, path)
+        for filename, path in local_files.items()
+    )
+
+    remote_max = max(
+        (canonical_index(f, slug) for f in remote_etags), default=-1
+    )
+
+    actions = []
+    for index, filename, path in indexed:
+        remote_etag = remote_etags.get(filename)
+        if remote_etag is None:
+            if index != remote_max + 1:
+                raise ValueError(
+                    "%s: %s would be a new photo but index %d is not the "
+                    "next available index (%d); check for a gap in "
+                    "staging/%s/" % (slug, filename, index, remote_max + 1, slug)
+                )
+            actions.append(Action("new", filename, index, path))
+            remote_max = index
+        else:
+            local_md5 = md5_of_file(path)
+            kind = "unchanged" if local_md5 == remote_etag else "changed"
+            actions.append(Action(kind, filename, index, path))
+    return actions

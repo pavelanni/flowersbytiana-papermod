@@ -4,7 +4,10 @@ import unittest
 from pathlib import Path
 
 from publish_album_updates import (
+    Action,
     canonical_index,
+    compute_plan,
+    list_remote_objects,
     local_canonical_files,
     md5_of_file,
     normalize_local_filenames,
@@ -95,6 +98,108 @@ class TestLocalCanonicalFiles(unittest.TestCase):
             self.assertEqual(
                 result["kingfisher-000.jpg"], staging_slug_dir / "kingfisher-000.jpg"
             )
+
+
+class FakeS3Client:
+    """Minimal stand-in for boto3's S3 client, scoped to what this script uses."""
+
+    def __init__(self, objects: dict[str, str]):
+        # objects: key -> etag (unquoted)
+        self.objects = dict(objects)
+        self.uploaded = {}
+
+    def get_paginator(self, operation_name):
+        assert operation_name == "list_objects_v2"
+        return self
+
+    def paginate(self, Bucket, Prefix):
+        contents = [
+            {"Key": key, "ETag": '"%s"' % etag}
+            for key, etag in self.objects.items()
+            if key.startswith(Prefix)
+        ]
+        yield {"Contents": contents}
+
+    def upload_file(self, Filename, Bucket, Key):
+        self.uploaded[Key] = Path(Filename).read_bytes()
+
+
+class TestListRemoteObjects(unittest.TestCase):
+    def test_strips_prefix_and_quotes(self):
+        client = FakeS3Client(
+            {
+                "kingfisher/kingfisher-000.jpg": "abc123",
+                "dragons/dragons-000.jpg": "zzz999",
+            }
+        )
+        result = list_remote_objects(client, "flowersbytiana", "kingfisher/")
+        self.assertEqual(result, {"kingfisher-000.jpg": "abc123"})
+
+
+class TestComputePlan(unittest.TestCase):
+    def _write(self, staging_dir, name, content):
+        path = staging_dir / name
+        path.write_bytes(content)
+        return path
+
+    def test_all_unchanged_when_md5_matches_etag(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            staging_dir = Path(tmp)
+            path0 = self._write(staging_dir, "kingfisher-000.jpg", b"same content")
+            etag = md5_of_file(path0)
+            local_files = {"kingfisher-000.jpg": path0}
+            remote_etags = {"kingfisher-000.jpg": etag}
+
+            actions = compute_plan("kingfisher", local_files, remote_etags)
+
+            self.assertEqual(len(actions), 1)
+            self.assertEqual(actions[0].kind, "unchanged")
+            self.assertEqual(actions[0].index, 0)
+
+    def test_changed_when_md5_differs_from_etag(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            staging_dir = Path(tmp)
+            path0 = self._write(staging_dir, "kingfisher-000.jpg", b"updated content")
+            local_files = {"kingfisher-000.jpg": path0}
+            remote_etags = {"kingfisher-000.jpg": "some-old-etag"}
+
+            actions = compute_plan("kingfisher", local_files, remote_etags)
+
+            self.assertEqual(len(actions), 1)
+            self.assertEqual(actions[0].kind, "changed")
+            self.assertEqual(actions[0].filename, "kingfisher-000.jpg")
+
+    def test_new_photo_chains_across_consecutive_indexes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            staging_dir = Path(tmp)
+            path8 = self._write(staging_dir, "dragons-008.jpg", b"eight")
+            path9 = self._write(staging_dir, "dragons-009.jpg", b"nine")
+            local_files = {
+                "dragons-008.jpg": path8,
+                "dragons-009.jpg": path9,
+            }
+            remote_etags = {
+                "dragons-%03d.jpg" % i: "etag-%d" % i for i in range(8)
+            }  # dragons-000.jpg .. dragons-007.jpg already remote
+
+            actions = compute_plan("dragons", local_files, remote_etags)
+
+            self.assertEqual([a.kind for a in actions], ["new", "new"])
+            self.assertEqual([a.index for a in actions], [8, 9])
+
+    def test_gap_raises_value_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            staging_dir = Path(tmp)
+            path9 = self._write(staging_dir, "dragons-009.jpg", b"nine")
+            local_files = {"dragons-009.jpg": path9}
+            remote_etags = {
+                "dragons-%03d.jpg" % i: "etag-%d" % i for i in range(8)
+            }  # max remote index is 7; local jumps straight to 9
+
+            with self.assertRaises(ValueError) as ctx:
+                compute_plan("dragons", local_files, remote_etags)
+
+            self.assertIn("dragons-009.jpg", str(ctx.exception))
 
 
 if __name__ == "__main__":
