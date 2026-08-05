@@ -4,3 +4,4 @@ scratch
 .wrangler
 resources
 .env
+__pycache__
