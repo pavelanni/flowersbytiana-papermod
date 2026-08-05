@@ -25,3 +25,7 @@ cover:
 {{< img "dragons/dragons-006.jpg" "Dragons 006" >}}
 
 {{< img "dragons/dragons-007.jpg" "Dragons 007" >}}
+
+{{< img "dragons/dragons-008.jpg" "Dragons 008" >}}
+
+{{< img "dragons/dragons-009.jpg" "Dragons 009" >}}
