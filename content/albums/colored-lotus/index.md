@@ -2,7 +2,7 @@
 date: '2026-08-02T12:00:00-04:00'
 draft: false
 title: 'Colored Lotus'
-weight: 140
+weight: 200
 tags:
   - colored-lotus
   - flowers
