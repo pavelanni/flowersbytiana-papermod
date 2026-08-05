@@ -14,6 +14,7 @@ from publish_album_updates import (
     md5_of_file,
     normalize_local_filenames,
 )
+from publish_album_updates import load_env, process_album
 
 
 class TestMd5OfFile(unittest.TestCase):
@@ -274,6 +275,105 @@ class TestAppendImgLines(unittest.TestCase):
             append_img_lines(index_md_path, "dragons", "Dragons", [])
 
             self.assertEqual(index_md_path.read_text(), SAMPLE_INDEX_MD)
+
+
+class TestLoadEnv(unittest.TestCase):
+    def test_parses_key_value_lines(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            env_path = Path(tmp) / ".env"
+            env_path.write_text(
+                "ACCESS_KEY_ID=abc123\n"
+                "SECRET_ACCESS_KEY=def456\n"
+                "# a comment\n"
+                "\n"
+                "CLOUDFLARE_API_TOKEN=ghi789\n"
+            )
+
+            env = load_env(env_path)
+
+            self.assertEqual(
+                env,
+                {
+                    "ACCESS_KEY_ID": "abc123",
+                    "SECRET_ACCESS_KEY": "def456",
+                    "CLOUDFLARE_API_TOKEN": "ghi789",
+                },
+            )
+
+
+class TestProcessAlbum(unittest.TestCase):
+    def _setup_dirs(self, tmp):
+        staging_dir = Path(tmp) / "staging"
+        staging_slug_dir = staging_dir / "dragons"
+        staging_slug_dir.mkdir(parents=True)
+        content_dir = Path(tmp) / "content"
+        (content_dir / "dragons").mkdir(parents=True)
+        (content_dir / "dragons" / "index.md").write_text(SAMPLE_INDEX_MD)
+        return staging_dir, content_dir
+
+    def test_dry_run_does_not_upload_or_write_index(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            staging_dir, content_dir = self._setup_dirs(tmp)
+            (staging_dir / "dragons" / "2.jpg").write_bytes(b"new painting")
+
+            client = FakeS3Client(
+                {
+                    "dragons/dragons-000.jpg": "etag0",
+                    "dragons/dragons-001.jpg": "etag1",
+                }
+            )
+
+            actions = process_album(
+                client, "flowersbytiana", staging_dir, content_dir, "dragons", False
+            )
+
+            self.assertEqual([a.kind for a in actions], ["new"])
+            self.assertEqual(client.uploaded, {})
+            self.assertEqual(
+                (content_dir / "dragons" / "index.md").read_text(), SAMPLE_INDEX_MD
+            )
+
+    def test_apply_uploads_and_writes_index(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            staging_dir, content_dir = self._setup_dirs(tmp)
+            (staging_dir / "dragons" / "2.jpg").write_bytes(b"new painting")
+
+            client = FakeS3Client(
+                {
+                    "dragons/dragons-000.jpg": "etag0",
+                    "dragons/dragons-001.jpg": "etag1",
+                }
+            )
+
+            process_album(
+                client, "flowersbytiana", staging_dir, content_dir, "dragons", True
+            )
+
+            self.assertEqual(
+                client.uploaded["dragons/dragons-002.jpg"], b"new painting"
+            )
+            index_text = (content_dir / "dragons" / "index.md").read_text()
+            self.assertIn(
+                '{{< img "dragons/dragons-002.jpg" "Dragons 002" >}}', index_text
+            )
+
+    def test_apply_with_only_changed_photo_does_not_touch_index(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            staging_dir, content_dir = self._setup_dirs(tmp)
+            (staging_dir / "dragons" / "dragons-000.jpg").write_bytes(b"updated")
+
+            client = FakeS3Client({"dragons/dragons-000.jpg": "old-etag"})
+
+            process_album(
+                client, "flowersbytiana", staging_dir, content_dir, "dragons", True
+            )
+
+            self.assertEqual(
+                client.uploaded["dragons/dragons-000.jpg"], b"updated"
+            )
+            self.assertEqual(
+                (content_dir / "dragons" / "index.md").read_text(), SAMPLE_INDEX_MD
+            )
 
 
 if __name__ == "__main__":
