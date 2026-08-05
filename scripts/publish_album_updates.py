@@ -2,6 +2,7 @@
 """Publish incremental photo updates from staging/<slug>/ to R2 and index.md."""
 import hashlib
 import re
+import yaml
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -89,3 +90,24 @@ def compute_plan(
             kind = "unchanged" if local_md5 == remote_etag else "changed"
             actions.append(Action(kind, filename, index, path))
     return actions
+
+
+def album_title(index_md_path: Path) -> str:
+    text = index_md_path.read_text()
+    _, front_matter_text, _ = text.split("---", 2)
+    front_matter = yaml.safe_load(front_matter_text)
+    return front_matter["title"]
+
+
+def append_img_lines(
+    index_md_path: Path, slug: str, title: str, new_actions: list[Action]
+) -> None:
+    if not new_actions:
+        return
+    text = index_md_path.read_text()
+    lines = [
+        '{{< img "%s/%s" "%s %03d" >}}' % (slug, action.filename, title, action.index)
+        for action in new_actions
+    ]
+    addition = "\n\n" + "\n\n".join(lines) + "\n"
+    index_md_path.write_text(text.rstrip("\n") + addition)

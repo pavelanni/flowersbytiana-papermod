@@ -5,6 +5,8 @@ from pathlib import Path
 
 from publish_album_updates import (
     Action,
+    album_title,
+    append_img_lines,
     canonical_index,
     compute_plan,
     list_remote_objects,
@@ -200,6 +202,78 @@ class TestComputePlan(unittest.TestCase):
                 compute_plan("dragons", local_files, remote_etags)
 
             self.assertIn("dragons-009.jpg", str(ctx.exception))
+
+
+SAMPLE_INDEX_MD = """---
+date: '2026-08-02T12:00:00-04:00'
+draft: false
+title: 'Dragons'
+weight: 110
+tags:
+  - dragons
+  - animals
+cover:
+  image: "dragons-cover.jpg"
+---
+
+{{< img "dragons/dragons-000.jpg" "Dragons 000" >}}
+
+{{< img "dragons/dragons-001.jpg" "Dragons 001" >}}
+"""
+
+
+class TestAlbumTitle(unittest.TestCase):
+    def test_extracts_title_from_front_matter(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            index_md_path = Path(tmp) / "index.md"
+            index_md_path.write_text(SAMPLE_INDEX_MD)
+
+            self.assertEqual(album_title(index_md_path), "Dragons")
+
+
+class TestAppendImgLines(unittest.TestCase):
+    def test_appends_one_new_entry_matching_existing_format(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            index_md_path = Path(tmp) / "index.md"
+            index_md_path.write_text(SAMPLE_INDEX_MD)
+
+            new_action = Action("new", "dragons-002.jpg", 2, Path("/unused"))
+            append_img_lines(index_md_path, "dragons", "Dragons", [new_action])
+
+            text = index_md_path.read_text()
+            self.assertTrue(
+                text.endswith(
+                    '{{< img "dragons/dragons-001.jpg" "Dragons 001" >}}\n\n'
+                    '{{< img "dragons/dragons-002.jpg" "Dragons 002" >}}\n'
+                )
+            )
+
+    def test_appends_multiple_entries_in_given_order(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            index_md_path = Path(tmp) / "index.md"
+            index_md_path.write_text(SAMPLE_INDEX_MD)
+
+            actions = [
+                Action("new", "dragons-002.jpg", 2, Path("/unused")),
+                Action("new", "dragons-003.jpg", 3, Path("/unused")),
+            ]
+            append_img_lines(index_md_path, "dragons", "Dragons", actions)
+
+            text = index_md_path.read_text()
+            self.assertIn(
+                '{{< img "dragons/dragons-002.jpg" "Dragons 002" >}}\n\n'
+                '{{< img "dragons/dragons-003.jpg" "Dragons 003" >}}\n',
+                text,
+            )
+
+    def test_no_op_when_no_new_actions(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            index_md_path = Path(tmp) / "index.md"
+            index_md_path.write_text(SAMPLE_INDEX_MD)
+
+            append_img_lines(index_md_path, "dragons", "Dragons", [])
+
+            self.assertEqual(index_md_path.read_text(), SAMPLE_INDEX_MD)
 
 
 if __name__ == "__main__":
