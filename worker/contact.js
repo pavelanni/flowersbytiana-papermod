@@ -34,14 +34,21 @@ export async function handleContact(request, env) {
   const subject = piece ? `New inquiry: ${piece}` : "New inquiry from flowersbytiana.com";
   const text = `From: ${name} <${email}>\nPiece: ${piece || "(not specified)"}\n\n${message}`;
 
-  await sendContactEmail({
-    apiKey: env.RESEND_API_KEY,
-    from: env.CONTACT_FROM_EMAIL,
-    to: toAddresses,
-    replyTo: email,
-    subject,
-    text,
-  });
+  try {
+    await sendContactEmail({
+      apiKey: env.RESEND_API_KEY,
+      from: env.CONTACT_FROM_EMAIL,
+      to: toAddresses,
+      replyTo: email,
+      subject,
+      text,
+    });
+  } catch (error) {
+    return Response.json(
+      { ok: false, error: "Something went wrong sending your message. Please try again." },
+      { status: 400 }
+    );
+  }
 
   return Response.json({ ok: true });
 }

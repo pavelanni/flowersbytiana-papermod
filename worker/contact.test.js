@@ -104,4 +104,24 @@ describe("handleContact", () => {
       expect.objectContaining({ subject: "New inquiry from flowersbytiana.com" })
     );
   });
+
+  it("returns error when sendContactEmail throws", async () => {
+    verifyTurnstile.mockResolvedValue(true);
+    sendContactEmail.mockRejectedValue(new Error("Resend API error 500: Service unavailable"));
+    const request = makeRequest({
+      name: "Jane",
+      email: "jane@example.com",
+      message: "Is this available?",
+      piece: "orchids-000",
+      "cf-turnstile-response": "good-token",
+    });
+
+    const response = await handleContact(request, makeEnv());
+    const body = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(body.ok).toBe(false);
+    expect(body.error).toBeTruthy();
+    expect(typeof body.error).toBe("string");
+  });
 });
