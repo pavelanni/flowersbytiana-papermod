@@ -10,6 +10,8 @@ cover:
   image: "orchids-cover.jpg"
 ---
 
+Orchids are symbolic of refinement, rare beauty, and elegance; they are also a symbol of virtue and moral integrity in Chinese literature.
+
 {{< img "orchids/orchids-000.jpg" "Orchids 000" >}}
 
 {{< img "orchids/orchids-001.jpg" "Orchids 001" >}}

@@ -10,6 +10,8 @@ cover:
   image: "bamboo-cover.jpg"
 ---
 
+Bamboo bends in the wind without breaking, making it a classical symbol of resilience, flexibility, and moral integrity.
+
 {{< img "bamboo/bamboo-000.jpg" "Bamboo 000" >}}
 
 {{< img "bamboo/bamboo-001.jpg" "Bamboo 001" >}}

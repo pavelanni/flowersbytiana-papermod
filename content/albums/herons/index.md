@@ -10,6 +10,8 @@ cover:
   image: "herons-cover.jpg"
 ---
 
+Herons are admired for their purity, patience, and quiet elegance, and their name's likeness to the word for "path" makes them a traditional symbol of career advancement.
+
 {{< img "herons/herons-000.jpg" "Herons 000" >}}
 
 {{< img "herons/herons-001.jpg" "Herons 001" >}}

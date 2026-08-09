@@ -10,6 +10,8 @@ cover:
   image: "meihua-cover.jpg"
 ---
 
+Meihua, the plum blossom, blooms in the depth of winter cold, making it a symbol of perseverance, quiet strength, and renewal.
+
 {{< img "meihua/meihua-000.jpg" "Meihua 000" >}}
 
 {{< img "meihua/meihua-001.jpg" "Meihua 001" >}}

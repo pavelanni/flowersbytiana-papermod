@@ -10,6 +10,8 @@ cover:
   image: "kingfisher-cover.jpg"
 ---
 
+The kingfisher's brilliant plumage has long inspired Chinese art, symbolizing beauty, vitality, and harmony with the natural world.
+
 {{< img "kingfisher/kingfisher-000.jpg" "Kingfisher 000" >}}
 
 {{< img "kingfisher/kingfisher-001.jpg" "Kingfisher 001" >}}
@@ -17,8 +19,6 @@ cover:
 {{< img "kingfisher/kingfisher-002.jpg" "Kingfisher 002" >}}
 
 {{< img "kingfisher/kingfisher-003.jpg" "Kingfisher 003" >}}
-
-{{< img "kingfisher/kingfisher-004.jpg" "Kingfisher 004" >}}
 
 {{< img "kingfisher/kingfisher-005.jpg" "Kingfisher 005" >}}
 

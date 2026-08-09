@@ -10,6 +10,8 @@ cover:
   image: "roosters-cover.jpg"
 ---
 
+The rooster embodies vigilance and courage in Chinese tradition, its dawn crow long taken as a symbol of new beginnings.
+
 {{< img "roosters/roosters-000.jpg" "Roosters 000" >}}
 
 {{< img "roosters/roosters-001.jpg" "Roosters 001" >}}

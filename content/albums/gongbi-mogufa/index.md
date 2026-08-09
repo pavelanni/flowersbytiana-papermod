@@ -10,6 +10,8 @@ cover:
   image: "gongbi-mogufa-cover.jpg"
 ---
 
+Gongbi and mogufa are two classical Chinese painting techniques: gongbi's fine, meticulous outlines contrasted with mogufa's "boneless" brushwork, built from color and ink alone.
+
 {{< img "gongbi-mogufa/gongbi-mogufa-000.jpg" "Gongbi Mogufa 000" >}}
 
 {{< img "gongbi-mogufa/gongbi-mogufa-001.jpg" "Gongbi Mogufa 001" >}}

@@ -10,6 +10,8 @@ cover:
   image: "lotus-cover.jpg"
 ---
 
+Lotus is known for its ability to emerge from mud pure and unstained, symbolizing purity, spiritual enlightenment, and resilience.
+
 {{< img "lotus/lotus-000.jpg" "Lotus 000" >}}
 
 {{< img "lotus/lotus-001.jpg" "Lotus 001" >}}

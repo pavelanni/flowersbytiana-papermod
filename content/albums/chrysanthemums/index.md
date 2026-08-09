@@ -10,6 +10,8 @@ cover:
   image: "chrysanthemums-cover.jpg"
 ---
 
+Chrysanthemums bloom latest into autumn, prized as a symbol of longevity, nobility, and quiet perseverance through hardship.
+
 {{< img "chrysanthemums/chrysanthemums-000.jpg" "Chrysanthemums 000" >}}
 
 {{< img "chrysanthemums/chrysanthemums-001.jpg" "Chrysanthemums 001" >}}

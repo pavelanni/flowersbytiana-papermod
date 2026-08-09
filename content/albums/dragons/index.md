@@ -10,6 +10,8 @@ cover:
   image: "dragons-cover.jpg"
 ---
 
+The dragon is one of the most revered figures in Chinese culture, representing power, strength, and good fortune.
+
 {{< img "dragons/dragons-000.jpg" "Dragons 000" >}}
 
 {{< img "dragons/dragons-001.jpg" "Dragons 001" >}}

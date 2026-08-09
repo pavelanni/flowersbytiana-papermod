@@ -10,6 +10,8 @@ cover:
   image: "narcissus-cover.jpg"
 ---
 
+Narcissus represents good fortune, prosperity, and new beginnings, often associated with the Lunar New Year for its timely bloom.
+
 {{< img "narcissus/narcissus-000.jpg" "Narcissus 000" >}}
 
 {{< img "narcissus/narcissus-001.jpg" "Narcissus 001" >}}

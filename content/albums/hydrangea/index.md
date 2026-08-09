@@ -10,6 +10,8 @@ cover:
   image: "hydrangea-cover.jpg"
 ---
 
+Hydrangeas aren't part of traditional Chinese flower symbolism, but their lush, abundant blossoms are often taken to represent gratitude, grace, and heartfelt emotion.
+
 {{< img "hydrangea/hydrangea-000.jpg" "Hydrangea 000" >}}
 
 {{< img "hydrangea/hydrangea-001.jpg" "Hydrangea 001" >}}

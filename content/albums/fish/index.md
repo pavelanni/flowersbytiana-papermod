@@ -10,6 +10,8 @@ cover:
   image: "fish-cover.jpg"
 ---
 
+Fish are a beloved symbol of abundance and prosperity in Chinese art, their name a phonetic pun on the word for "surplus."
+
 {{< img "fish/fish-000.jpg" "Fish 000" >}}
 
 {{< img "fish/fish-001.jpg" "Fish 001" >}}

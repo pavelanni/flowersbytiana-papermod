@@ -10,6 +10,8 @@ cover:
   image: "peonies-cover.jpg"
 ---
 
+Peonies are known as the "king of flowers," representing wealth, honor, and prosperity; they are a national symbol and embody opulence and high social rank.
+
 {{< img "peonies/peonies-000.jpg" "Peonies 000" >}}
 
 {{< img "peonies/peonies-001.jpg" "Peonies 001" >}}

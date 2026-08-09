@@ -10,6 +10,8 @@ cover:
   image: "iris-cover.jpg"
 ---
 
+Iris is seen as a symbol of hope and the promise of future prosperity; its delicate beauty also embodies elegance and grace.
+
 {{< img "iris/iris-000.jpg" "Iris 000" >}}
 
 {{< img "iris/iris-001.jpg" "Iris 001" >}}

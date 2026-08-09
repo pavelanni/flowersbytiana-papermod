@@ -1,7 +1,7 @@
 ---
 date: '2026-08-02T12:00:00-04:00'
 draft: false
-title: 'Colored Lotus'
+title: 'Vivid Lotus'
 weight: 200
 tags:
   - colored-lotus
@@ -10,16 +10,18 @@ cover:
   image: "colored-lotus-cover.jpg"
 ---
 
-{{< img "colored-lotus/colored-lotus-000.jpg" "Colored Lotus 000" >}}
+Rendered here in vivid color rather than traditional ink tones, these lotus paintings carry the same symbolism of purity and resilience in a more vibrant, contemporary palette.
 
-{{< img "colored-lotus/colored-lotus-001.jpg" "Colored Lotus 001" >}}
+{{< img "colored-lotus/colored-lotus-000.jpg" "Vivid Lotus 000" >}}
 
-{{< img "colored-lotus/colored-lotus-002.jpg" "Colored Lotus 002" >}}
+{{< img "colored-lotus/colored-lotus-001.jpg" "Vivid Lotus 001" >}}
 
-{{< img "colored-lotus/colored-lotus-003.jpg" "Colored Lotus 003" >}}
+{{< img "colored-lotus/colored-lotus-002.jpg" "Vivid Lotus 002" >}}
 
-{{< img "colored-lotus/colored-lotus-004.jpg" "Colored Lotus 004" >}}
+{{< img "colored-lotus/colored-lotus-003.jpg" "Vivid Lotus 003" >}}
 
-{{< img "colored-lotus/colored-lotus-005.jpg" "Colored Lotus 005" >}}
+{{< img "colored-lotus/colored-lotus-004.jpg" "Vivid Lotus 004" >}}
 
-{{< img "colored-lotus/colored-lotus-006.jpg" "Colored Lotus 006" >}}
+{{< img "colored-lotus/colored-lotus-005.jpg" "Vivid Lotus 005" >}}
+
+{{< img "colored-lotus/colored-lotus-006.jpg" "Vivid Lotus 006" >}}

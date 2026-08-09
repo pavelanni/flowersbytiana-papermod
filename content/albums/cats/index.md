@@ -10,6 +10,8 @@ cover:
   image: "cats-cover.jpg"
 ---
 
+Cats are treasured in Chinese art for their playful charm, and their name's phonetic link to the word for "octogenarian" makes them a traditional wish for a long life.
+
 {{< img "cats/cats-000.jpg" "Cats 000" >}}
 
 {{< img "cats/cats-001.jpg" "Cats 001" >}}
