@@ -1,0 +1,88 @@
+{{ define "main" }}
+<article class="post-single">
+  <header class="post-header">
+    <h1 class="post-title">Contact Us</h1>
+    <div class="post-description">
+      <p>Interested in one of Tiana's paintings? Send us a message and we'll get back to you.</p>
+    </div>
+  </header>
+
+  <form id="contact-form" class="contact-form">
+    <p id="piece-wrap">
+      <label id="piece-label" for="piece-input">Which piece are you asking about? (optional)</label><br>
+      <input type="text" id="piece-input" name="piece" placeholder="e.g. Orchid 000, or leave blank for a general question">
+    </p>
+    <p>
+      <label for="contact-name">Name</label><br>
+      <input type="text" id="contact-name" name="name" required>
+    </p>
+    <p>
+      <label for="contact-email">Email</label><br>
+      <input type="email" id="contact-email" name="email" required>
+    </p>
+    <p>
+      <label for="contact-message">Message</label><br>
+      <textarea id="contact-message" name="message" rows="6" required></textarea>
+    </p>
+    <div class="cf-turnstile" data-sitekey="{{ site.Params.turnstileSiteKey }}"></div>
+    <p><button type="submit">Send</button></p>
+    <p id="contact-status" role="status"></p>
+  </form>
+
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const piece = params.get("piece");
+      const title = params.get("title");
+
+      if (piece) {
+        const input = document.getElementById("piece-input");
+        const label = document.getElementById("piece-label");
+        input.value = title ? `${title} (${piece})` : piece;
+        input.readOnly = true;
+        label.textContent = "Regarding";
+      }
+
+      const form = document.getElementById("contact-form");
+      const status = document.getElementById("contact-status");
+
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        status.textContent = "Sending...";
+        try {
+          const response = await fetch("/api/contact", {
+            method: "POST",
+            body: new FormData(form),
+          });
+          const data = await response.json();
+          if (data.ok) {
+            status.textContent = "Thanks! We'll be in touch soon.";
+            form.reset();
+          } else {
+            status.textContent = data.error || "Something went wrong. Please try again.";
+          }
+        } catch (err) {
+          status.textContent = "Something went wrong. Please try again.";
+        }
+      });
+    })();
+  </script>
+
+  <style>
+    .contact-form label { font-weight: 600; }
+    .contact-form input[type="text"],
+    .contact-form input[type="email"],
+    .contact-form textarea {
+      width: 100%;
+      max-width: 32rem;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+      box-sizing: border-box;
+    }
+    .contact-form button {
+      padding: 0.5rem 1.5rem;
+    }
+  </style>
+</article>
+{{ end }}
