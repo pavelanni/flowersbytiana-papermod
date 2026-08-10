@@ -2,11 +2,14 @@
 {{ $imageName := .Get 0 }}
 {{ $alt := .Get 1 }}
 {{ $caption := .Get 2 }}
+{{ $forSale := eq (.Get 3) "forsale" }}
 
 <figure>
   <img src="{{ $imageCdn }}{{ $imageName }}" alt="{{ $alt }}" />
   {{ with $caption }}
   <p class="caption">{{ . }}</p>
+  {{ end }}
+  {{ if $forSale }}
   {{ $pieceID := path.Base $imageName }}
   {{ $pieceID = $pieceID | strings.TrimSuffix (path.Ext $pieceID) }}
   <p class="contact-link"><a href="/contact/?piece={{ $pieceID | urlquery }}&amp;title={{ $alt | urlquery }}">Contact us about this piece</a></p>
