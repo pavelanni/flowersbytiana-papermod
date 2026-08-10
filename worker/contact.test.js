@@ -105,7 +105,7 @@ describe("handleContact", () => {
     );
   });
 
-  it("returns error when sendContactEmail throws", async () => {
+  it("returns a 502 when sendContactEmail throws (server-side dependency failure)", async () => {
     verifyTurnstile.mockResolvedValue(true);
     sendContactEmail.mockRejectedValue(new Error("Resend API error 500: Service unavailable"));
     const request = makeRequest({
@@ -119,9 +119,68 @@ describe("handleContact", () => {
     const response = await handleContact(request, makeEnv());
     const body = await response.json();
 
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(502);
     expect(body.ok).toBe(false);
     expect(body.error).toBeTruthy();
     expect(typeof body.error).toBe("string");
+  });
+
+  it("returns a 400 JSON error instead of throwing when the request body isn't form data", async () => {
+    const request = new Request("https://flowersbytiana.com/api/contact", {
+      method: "POST",
+      body: "not form data",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const response = await handleContact(request, makeEnv());
+    const body = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(body.ok).toBe(false);
+    expect(typeof body.error).toBe("string");
+    expect(body.error.length).toBeGreaterThan(0);
+    expect(verifyTurnstile).not.toHaveBeenCalled();
+  });
+
+  it("returns a 400 JSON error instead of throwing when verifyTurnstile rejects (network failure)", async () => {
+    verifyTurnstile.mockRejectedValue(new Error("fetch failed"));
+    const request = makeRequest({
+      name: "Jane",
+      email: "jane@example.com",
+      message: "Is this available?",
+      piece: "orchids-000",
+      "cf-turnstile-response": "good-token",
+    });
+
+    const response = await handleContact(request, makeEnv());
+    const body = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(body.ok).toBe(false);
+    expect(typeof body.error).toBe("string");
+    expect(body.error.length).toBeGreaterThan(0);
+    expect(sendContactEmail).not.toHaveBeenCalled();
+  });
+
+  it("sanitizes a piece value containing embedded CRLF before it reaches the email", async () => {
+    verifyTurnstile.mockResolvedValue(true);
+    sendContactEmail.mockResolvedValue({ id: "email_789" });
+    const request = makeRequest({
+      name: "Jane",
+      email: "jane@example.com",
+      message: "Is this available?",
+      piece: "orchids-000\r\nBcc: evil@example.com",
+      "cf-turnstile-response": "good-token",
+    });
+
+    const response = await handleContact(request, makeEnv());
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.ok).toBe(true);
+    expect(sendContactEmail).toHaveBeenCalledTimes(1);
+    const call = sendContactEmail.mock.calls[0][0];
+    expect(call.subject).not.toMatch(/[\r\n]/);
+    expect(call.text).not.toMatch(/Piece:.*[\r\n].*Bcc:/);
   });
 });

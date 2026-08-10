@@ -889,6 +889,11 @@ npx wrangler secret put RESEND_API_KEY
 
 npx wrangler secret put TURNSTILE_SECRET_KEY
 # paste the Turnstile secret key from Step 2 when prompted
+
+npx wrangler secret put CONTACT_TO_EMAILS
+# paste: pavel.anni@gmail.com,tatiana.batik@gmail.com
+# (comma-separated, matching the format worker/contact.js expects — kept as a
+# secret rather than a committed var because this repo is public on GitHub)
 ```
 
 - [ ] **Step 5: Deploy to a preview URL and smoke-test before touching the live domain**
