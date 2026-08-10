@@ -5,3 +5,5 @@ scratch
 resources
 .env
 __pycache__
+node_modules
+.dev.vars

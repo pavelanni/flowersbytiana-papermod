@@ -1,0 +1,17 @@
+{
+  "name": "flowersbytiana",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-08-09",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"],
+    "not_found_handling": "404-page"
+  },
+  "vars": {
+    "CONTACT_FROM_EMAIL": "Flowers by Tiana <contact@flowersbytiana.com>"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

@@ -23,6 +23,9 @@ params:
     hiddenInList: false
     hiddenInSingle: false
   imageCdn: "https://cdn.flowersbytiana.com/"
+  # Site key from the Cloudflare Turnstile widget for flowersbytiana.com.
+  # Filled in during manual setup (Task 7) — safe to be public, unlike the secret key.
+  turnstileSiteKey: ""
 
 menu:
   main:
@@ -35,3 +38,6 @@ menu:
   - name: Tags
     url: /tags/
     weight: 3
+  - name: Contact
+    url: /contact/
+    weight: 4

@@ -5,5 +5,10 @@
 
 <figure>
   <img src="{{ $imageCdn }}{{ $imageName }}" alt="{{ $alt }}" />
-  {{ with $caption }}<p class="caption">{{ . }}</p>{{ end }}
+  {{ with $caption }}
+  <p class="caption">{{ . }}</p>
+  {{ $pieceID := path.Base $imageName }}
+  {{ $pieceID = $pieceID | strings.TrimSuffix (path.Ext $pieceID) }}
+  <p class="contact-link"><a href="/contact/?piece={{ $pieceID | urlquery }}&amp;title={{ $alt | urlquery }}">Contact us about this piece</a></p>
+  {{ end }}
 </figure>
