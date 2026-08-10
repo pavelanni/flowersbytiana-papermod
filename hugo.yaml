@@ -25,7 +25,7 @@ params:
   imageCdn: "https://cdn.flowersbytiana.com/"
   # Site key from the Cloudflare Turnstile widget for flowersbytiana.com.
   # Filled in during manual setup (Task 7) — safe to be public, unlike the secret key.
-  turnstileSiteKey: ""
+  turnstileSiteKey: "0x4AAAAAAELkglxIEwJ4UV9k"
 
 menu:
   main:
