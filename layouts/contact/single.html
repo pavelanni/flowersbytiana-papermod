@@ -86,6 +86,15 @@
       padding: 0.5rem;
       margin-top: 0.25rem;
       box-sizing: border-box;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--content);
+    }
+    .contact-form input[type="text"]:focus,
+    .contact-form input[type="email"]:focus,
+    .contact-form textarea:focus {
+      outline: 1px solid var(--secondary);
     }
     .contact-form button {
       padding: 0.5rem 1.5rem;
