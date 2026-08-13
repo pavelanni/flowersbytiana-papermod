@@ -12,18 +12,18 @@ cover:
 
 The kingfisher's brilliant plumage has long inspired Chinese art, symbolizing beauty, vitality, and harmony with the natural world.
 
-{{< img "kingfisher/kingfisher-000.jpg" "Kingfisher 000" >}}
+{{< img "kingfisher/kingfisher-000.jpg" "Kingfisher 000" "28 × 16 in" "forsale" >}}
 
-{{< img "kingfisher/kingfisher-001.jpg" "Kingfisher 001" >}}
+{{< img "kingfisher/kingfisher-001.jpg" "Kingfisher 001" "40 × 14 in" "forsale" >}}
 
-{{< img "kingfisher/kingfisher-002.jpg" "Kingfisher 002" >}}
+{{< img "kingfisher/kingfisher-002.jpg" "Kingfisher 002" "40 × 14 in" "forsale" >}}
 
-{{< img "kingfisher/kingfisher-003.jpg" "Kingfisher 003" >}}
+{{< img "kingfisher/kingfisher-003.jpg" "Kingfisher 003" "40 × 14 in" "forsale" >}}
 
-{{< img "kingfisher/kingfisher-005.jpg" "Kingfisher 005" >}}
+{{< img "kingfisher/kingfisher-005.jpg" "Kingfisher 005" "16 × 14 in" "forsale" >}}
 
-{{< img "kingfisher/kingfisher-006.jpg" "Kingfisher 006" >}}
+{{< img "kingfisher/kingfisher-006.jpg" "Kingfisher 006" "14 × 16 in" "forsale" >}}
 
-{{< img "kingfisher/kingfisher-007.jpg" "Kingfisher 007" >}}
+{{< img "kingfisher/kingfisher-007.jpg" "Kingfisher 007" "34 × 14 in" "forsale" >}}
 
-{{< img "kingfisher/kingfisher-008.jpg" "Kingfisher 008" >}}
+{{< img "kingfisher/kingfisher-008.jpg" "Kingfisher 008" "" "forsale" >}}

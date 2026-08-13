@@ -7,3 +7,4 @@ resources
 __pycache__
 node_modules
 .dev.vars
+.venv
