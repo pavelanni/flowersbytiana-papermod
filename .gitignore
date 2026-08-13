@@ -8,3 +8,4 @@ __pycache__
 node_modules
 .dev.vars
 .venv
+pictures_on_site.csv
