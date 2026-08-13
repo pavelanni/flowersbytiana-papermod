@@ -26,4 +26,3 @@ The kingfisher's brilliant plumage has long inspired Chinese art, symbolizing be
 
 {{< img "kingfisher/kingfisher-007.jpg" "Kingfisher 007" "34 × 14 in" "forsale" >}}
 
-{{< img "kingfisher/kingfisher-008.jpg" "Kingfisher 008" "" "forsale" >}}

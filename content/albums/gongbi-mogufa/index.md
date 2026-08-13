@@ -16,9 +16,9 @@ Gongbi and mogufa are two classical Chinese painting techniques: gongbi's fine, 
 
 {{< img "gongbi-mogufa/gongbi-mogufa-001.jpg" "Gongbi Mogufa 001" "16 × 16 in" "forsale" >}}
 
-{{< img "gongbi-mogufa/gongbi-mogufa-002.jpg" "Gongbi Mogufa 002" "24 × 16 in" "forsale" >}}
-
 {{< img "gongbi-mogufa/gongbi-mogufa-003.jpg" "Gongbi Mogufa 003" "16 × 16 in" "forsale" >}}
+
+{{< img "gongbi-mogufa/gongbi-mogufa-002.jpg" "Gongbi Mogufa 002" "24 × 16 in" "forsale" >}}
 
 {{< img "gongbi-mogufa/gongbi-mogufa-004.jpg" "Gongbi Mogufa 004" "26 × 18 in, in private collection" >}}
 
@@ -42,9 +42,9 @@ Gongbi and mogufa are two classical Chinese painting techniques: gongbi's fine, 
 
 {{< img "gongbi-mogufa/gongbi-mogufa-014.jpg" "Gongbi Mogufa 014" "26 × 18 in" "forsale" >}}
 
-{{< img "gongbi-mogufa/gongbi-mogufa-015.jpg" "Gongbi Mogufa 015" "20 × 20 in, in private collection" >}}
-
 {{< img "gongbi-mogufa/gongbi-mogufa-016.jpg" "Gongbi Mogufa 016" "26 × 18 in" "forsale" >}}
+
+{{< img "gongbi-mogufa/gongbi-mogufa-015.jpg" "Gongbi Mogufa 015" "20 × 20 in, in private collection" >}}
 
 {{< img "gongbi-mogufa/gongbi-mogufa-017.jpg" "Gongbi Mogufa 017" "26 × 18 in" "forsale" >}}
 
